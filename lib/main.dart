@@ -30,6 +30,9 @@ class MyHomePage extends StatelessWidget {
     )
   ];
 
+  String titleInput;
+  String amountInput;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -53,12 +56,34 @@ class MyHomePage extends StatelessWidget {
             ),
           ),
           Card(
-            elevation: 5,
+            elevation: 3,
             child: Container(
               padding: EdgeInsets.all(10),
-              child: Column(children: [
-                TextField(),
-                TextField(),
+              child:
+                  Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
+                TextField(
+                  decoration: InputDecoration(
+                    labelText: 'Title',
+                  ),
+                  onChanged: (value) {
+                    titleInput = value;
+                  },
+                ),
+                TextField(
+                  decoration: InputDecoration(
+                    labelText: 'Amount',
+                  ),
+                  onChanged: (value) {
+                    amountInput = value;
+                  },
+                ),
+                TextButton(
+                  onPressed: () => print('${titleInput}, ${amountInput}'),
+                  child: Text('Add Transaction'),
+                  style: ButtonStyle(
+                    foregroundColor: MaterialStateProperty.all(Colors.purple),
+                  ),
+                )
               ]),
             ),
           ),
