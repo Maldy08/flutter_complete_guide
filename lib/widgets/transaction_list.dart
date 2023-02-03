@@ -12,48 +12,54 @@ class TranstacionList extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: 400,
-      child: ListView.builder(
-        itemBuilder: (ctx, index) {
-          return Card(
-            child: Row(
+      child: trasnsactions.isEmpty
+          ? Column(
               children: [
+                Text(
+                  'No transactions added yet!!',
+                  style: Theme.of(context).textTheme.headline6,
+                ),
+                SizedBox(
+                  height: 20,
+                ),
                 Container(
-                  padding: EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                        color: Theme.of(context).primaryColor, width: 2),
-                  ),
-                  margin: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-                  child: Text(
-                    '\$${trasnsactions[index].amount.toStringAsFixed(2)}',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20,
-                      color: Theme.of(context).primaryColor,
-                    ),
+                  height: 200,
+                  child: Image.asset(
+                    'assets/images/waiting.png',
+                    fit: BoxFit.cover,
                   ),
                 ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
+              ],
+            )
+          : ListView.builder(
+              itemBuilder: (ctx, index) {
+                return Card(
+                  elevation: 5,
+                  margin: EdgeInsets.symmetric(
+                    vertical: 8,
+                    horizontal: 5,
+                  ),
+                  child: ListTile(
+                    leading: CircleAvatar(
+                      radius: 30,
+                      child: Padding(
+                        padding: const EdgeInsets.all(6),
+                        child: FittedBox(
+                            child: Text('\$${trasnsactions[index].amount}')),
+                      ),
+                    ),
+                    title: Text(
                       trasnsactions[index].title,
                       style: Theme.of(context).textTheme.headline6,
                     ),
-                    Text(
-                      DateFormat.yMMMMd().format(trasnsactions[index].date),
-                      style: TextStyle(
-                        color: Colors.grey,
-                      ),
-                    )
-                  ],
-                )
-              ],
+                    subtitle: Text(
+                      DateFormat.yMMMd().format(trasnsactions[index].date),
+                    ),
+                  ),
+                );
+              },
+              itemCount: trasnsactions.length,
             ),
-          );
-        },
-        itemCount: trasnsactions.length,
-      ),
     );
   }
 }
