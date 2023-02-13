@@ -34,7 +34,7 @@ class CartScreen extends StatelessWidget {
                       style: TextStyle(
                           color: Theme.of(context)
                               .primaryTextTheme
-                              .headline6
+                              .titleLarge
                               ?.color),
                     ),
                     backgroundColor: Theme.of(context).primaryColor,

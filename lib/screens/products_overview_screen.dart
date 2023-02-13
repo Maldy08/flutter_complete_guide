@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import '../widgets/app_drawer.dart';
 import '../providers/cart.dart';
 import '../widgets/products_grid.dart';
-import '../widgets/badge.dart';
+
 import './cart_screen.dart';
 
 enum FilterOptions {
@@ -57,7 +57,7 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
           Consumer<Cart>(
             builder: (_, cart, child) => Badge(
               child: child as Widget,
-              value: cart.itemCount.toString(),
+              label: Text('${cart.itemCount}'),
             ),
             child: IconButton(
               icon: Icon(
