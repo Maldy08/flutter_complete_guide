@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
           create: (context) => Cart(),
         ),
         ChangeNotifierProvider(
-          create: ((context) => Orders()),
+          create: (context) => Orders(),
         )
       ],
       child: MaterialApp(
@@ -53,10 +53,10 @@ class MyHomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('MyShop'),
+        title: const Text('MyShop'),
       ),
       body: Center(
-        child: Text('Let\'s build a shop!'),
+        child: const Text('Let\'s build a shop!'),
       ),
     );
   }
