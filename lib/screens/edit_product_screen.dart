@@ -48,18 +48,20 @@ class _EditProductScreenState extends State<EditProductScreen> {
   @override
   void didChangeDependencies() {
     if (_isInit) {
-      final productId = ModalRoute.of(context)?.settings.arguments as String;
-
-      _editedProduct =
-          Provider.of<Products>(context, listen: false).findById(productId);
-      _initValues = {
-        'title': _editedProduct.title,
-        'description': _editedProduct.description,
-        'price': _editedProduct.price.toString(),
-        'imageUrl': _editedProduct.imageUrl
-      };
-      _imageUrlController.text = _editedProduct.imageUrl;
+      final productId = ModalRoute.of(context)!.settings.arguments as String?;
+      if (productId != null) {
+        _editedProduct =
+            Provider.of<Products>(context, listen: false).findById(productId);
+        _initValues = {
+          'title': _editedProduct.title,
+          'description': _editedProduct.description,
+          'price': _editedProduct.price.toString(),
+          'imageUrl': _editedProduct.imageUrl
+        };
+        _imageUrlController.text = _editedProduct.imageUrl;
+      }
     }
+
     _isInit = false;
     super.didChangeDependencies();
   }
@@ -69,17 +71,18 @@ class _EditProductScreenState extends State<EditProductScreen> {
   }
 
   void _saveForm() {
-    final isNotValid = _form.currentState!.validate();
-    if (isNotValid) return;
-    _form.currentState!.save();
-    if (_editedProduct.id.isNotEmpty) {
-      Provider.of<Products>(context, listen: false)
-          .updateProduct(_editedProduct.id, _editedProduct);
-    } else {
-      Provider.of<Products>(context, listen: false).addProduct(_editedProduct);
-    }
+    if (_form.currentState!.validate()) {
+      _form.currentState!.save();
+      if (_editedProduct.id.isNotEmpty) {
+        Provider.of<Products>(context, listen: false)
+            .updateProduct(_editedProduct.id, _editedProduct);
+      } else {
+        Provider.of<Products>(context, listen: false)
+            .addProduct(_editedProduct);
+      }
 
-    Navigator.of(context).pop();
+      Navigator.of(context).pop();
+    }
 
     //print(_editedProduct.imageUrl);
   }
@@ -91,12 +94,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
         title: const Text('Edit Product'),
         actions: [
           IconButton(
-            onPressed: () {
-              if (_form.currentState!.validate()) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Procesando Informacion')));
-              }
-            },
+            onPressed: _saveForm,
             icon: Icon(Icons.save),
           )
         ],
