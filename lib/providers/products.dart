@@ -59,13 +59,14 @@ class Products with ChangeNotifier {
   }
 
   Future<void> fetchAndSetProducts() async {
-    var url = Uri.parse(
-      'https://flutter-update-5634f-default-rtdb.firebaseio.com/products.json',
+    var url = Uri.https(
+      'flutter-update-5634f-default-rtdb.firebaseio.com',
+      '/products.json',
     );
-
     try {
       final response = await http.get(url);
       final extractData = json.decode(response.body) as Map<String, dynamic>;
+      if (extractData.isEmpty) return;
       final List<Product> loadedProducts = [];
       extractData.forEach(
         (key, value) {
@@ -84,7 +85,7 @@ class Products with ChangeNotifier {
       _items = loadedProducts;
       notifyListeners();
     } catch (error) {
-      throw error;
+      throw (error.toString());
     }
   }
 
@@ -119,11 +120,8 @@ class Products with ChangeNotifier {
   Future<void> updateProduct(String id, Product newProduct) async {
     final product = _items.indexWhere((element) => element.id == id);
     if (product >= 0) {
-      var url = Uri.https(
-        'flutter-update-5634f-default-rtdb.firebaseio.com',
-        '/products.json',
-        {'id': id},
-      );
+      var url = Uri.https('flutter-update-5634f-default-rtdb.firebaseio.com',
+          '/products.json/$id.json');
       try {
         await http.patch(url,
             body: json.encode({
@@ -138,6 +136,22 @@ class Products with ChangeNotifier {
       _items[product] = newProduct;
       notifyListeners();
     }
+  }
+
+  Future<void> deleteProduct(String id) async {
+    final url =
+        Uri.https('flutter-update.firebaseio.com', '/products/$id.json');
+    final existingProductIndex = _items.indexWhere((prod) => prod.id == id);
+    Product? existingProduct = _items[existingProductIndex];
+    _items.removeAt(existingProductIndex);
+    notifyListeners();
+    final response = await http.delete(url);
+    if (response.statusCode >= 400) {
+      _items.insert(existingProductIndex, existingProduct);
+      notifyListeners();
+      // throw HttpException('Could not delete product.');
+    }
+    existingProduct = null;
   }
 
   // void showFavoritesOnly() {

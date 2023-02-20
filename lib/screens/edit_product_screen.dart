@@ -71,24 +71,24 @@ class _EditProductScreenState extends State<EditProductScreen> {
     setState(() {});
   }
 
-  void _saveForm() async {
-    setState(() {
-      _isLoading = true;
-    });
+  Future<void> _saveForm() async {
     if (_form.currentState!.validate()) {
       _form.currentState!.save();
+      setState(() {
+        _isLoading = true;
+      });
+
       if (_editedProduct.id.isNotEmpty) {
         await Provider.of<Products>(context, listen: false)
             .updateProduct(_editedProduct.id, _editedProduct);
-        setState(() {
-          _isLoading = false;
-        });
-        Navigator.of(context).pop();
+
+        //Navigator.of(context).pop();
       } else {
-        await Provider.of<Products>(context, listen: false)
-            .addProduct(_editedProduct)
-            .catchError((error) {
-          return showDialog<Null>(
+        try {
+          await Provider.of<Products>(context, listen: false)
+              .addProduct(_editedProduct);
+        } catch (error) {
+          await showDialog(
               context: context,
               builder: (context) => AlertDialog(
                     title: Text('An error ocurred!'),
@@ -101,14 +101,13 @@ class _EditProductScreenState extends State<EditProductScreen> {
                           child: Text('Ok'))
                     ],
                   ));
-        }).then((_) {
-          setState(() {
-            _isLoading = false;
-          });
-          Navigator.of(context).pop();
-        });
+        }
       }
     }
+    setState(() {
+      _isLoading = false;
+    });
+    Navigator.of(context).pop();
     //print(_editedProduct.imageUrl);
   }
 
