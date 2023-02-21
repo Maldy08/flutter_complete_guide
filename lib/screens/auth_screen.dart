@@ -104,6 +104,22 @@ class _AuthCardState extends State<AuthCard> {
   var _isLoading = false;
   final _passwordController = TextEditingController();
 
+  void _showErrorDialog(String message) {
+    showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+              title: Text('An Error Ocurred!'),
+              content: Text(message),
+              actions: [
+                TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: Text('OK'))
+              ],
+            ));
+  }
+
   Future<void> _submit() async {
     if (_formKey.currentState!.validate()) {
       // Invalid!
@@ -128,9 +144,18 @@ class _AuthCardState extends State<AuthCard> {
         }
       } on HttpException catch (error) {
         var errorMessage = 'Authentication failed';
+        if (error.toString().contains('EMAIL_EXISTES')) {
+          errorMessage = 'This email already in use';
+        } else if (error.toString().contains('INVALID_EMAIL')) {
+          errorMessage = 'This is not a valid email address';
+        } else if (error.toString().contains('EMAIL_NOT_FOUND')) {
+          errorMessage = 'Could not find a user with this email';
+        }
+        _showErrorDialog(errorMessage);
       } catch (error) {
-        var errorMessage =
+        const errorMessage =
             'Could not authenticate you. Please try again laiter';
+        _showErrorDialog(errorMessage);
       }
 
       setState(() {

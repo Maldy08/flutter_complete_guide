@@ -24,8 +24,12 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (context) => Auth(),
         ),
-        ChangeNotifierProvider(
-          create: (context) => Products(),
+        ChangeNotifierProxyProvider<Auth, Products>(
+          create: (_) => Products('', []),
+          update: (context, auth, previousProducts) => Products(
+            auth.token!,
+            previousProducts == null ? [] : previousProducts.items,
+          ),
         ),
         ChangeNotifierProvider(
           create: (context) => Cart(),
@@ -34,20 +38,22 @@ class MyApp extends StatelessWidget {
           create: (context) => Orders(),
         )
       ],
-      child: MaterialApp(
-        title: 'MyShop',
-        theme: ThemeData(
-          primarySwatch: Colors.blueGrey,
-          fontFamily: 'Lato',
+      child: Consumer<Auth>(
+        builder: (context, auth, _) => MaterialApp(
+          title: 'MyShop',
+          theme: ThemeData(
+            primarySwatch: Colors.blueGrey,
+            fontFamily: 'Lato',
+          ),
+          home: auth.isAuth ? ProductOverviewScreen() : AuthScreen(),
+          routes: {
+            ProductDetalScreen.routeName: (context) => ProductDetalScreen(),
+            CartScreen.routeName: (context) => CartScreen(),
+            OrdersScreen.routeName: (context) => OrdersScreen(),
+            UserProductScreen.routeName: (context) => UserProductScreen(),
+            EditProductScreen.routeName: (context) => EditProductScreen(),
+          },
         ),
-        home: AuthScreen(),
-        routes: {
-          ProductDetalScreen.routeName: (context) => ProductDetalScreen(),
-          CartScreen.routeName: (context) => CartScreen(),
-          OrdersScreen.routeName: (context) => OrdersScreen(),
-          UserProductScreen.routeName: (context) => UserProductScreen(),
-          EditProductScreen.routeName: (context) => EditProductScreen(),
-        },
       ),
     );
   }
