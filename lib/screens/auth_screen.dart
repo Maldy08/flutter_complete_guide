@@ -1,6 +1,10 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_complete_guide/models/http_exception.dart';
+import 'package:provider/provider.dart';
+
+import '../providers/auth.dart';
 
 enum AuthMode { Signup, Login }
 
@@ -100,23 +104,39 @@ class _AuthCardState extends State<AuthCard> {
   var _isLoading = false;
   final _passwordController = TextEditingController();
 
-  void _submit() {
+  Future<void> _submit() async {
     if (_formKey.currentState!.validate()) {
       // Invalid!
-      return;
+
+      _formKey.currentState!.save();
+      setState(() {
+        _isLoading = true;
+      });
+      try {
+        if (_authMode == AuthMode.Login) {
+          // Log user in
+          await Provider.of<Auth>(context, listen: false).login(
+            _authData['email']!,
+            _authData['password']!,
+          );
+        } else {
+          // Sign user up
+          await Provider.of<Auth>(context, listen: false).signUp(
+            _authData['email']!,
+            _authData['password']!,
+          );
+        }
+      } on HttpException catch (error) {
+        var errorMessage = 'Authentication failed';
+      } catch (error) {
+        var errorMessage =
+            'Could not authenticate you. Please try again laiter';
+      }
+
+      setState(() {
+        _isLoading = false;
+      });
     }
-    _formKey.currentState!.save();
-    setState(() {
-      _isLoading = true;
-    });
-    if (_authMode == AuthMode.Login) {
-      // Log user in
-    } else {
-      // Sign user up
-    }
-    setState(() {
-      _isLoading = false;
-    });
   }
 
   void _switchAuthMode() {
